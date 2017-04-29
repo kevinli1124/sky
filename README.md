@@ -1,24 +1,34 @@
-# Flask Echo
+# Line 聊天機器人簡單範例
+可參考 [Line 官方文件](https://developers.line.me/bot-api/getting-started-with-bot-api-trial)
 
-Sample echo-bot using [Flask](http://flask.pocoo.org/)
-
-## Getting started
-
-```
-$ export LINE_CHANNEL_SECRET=YOUR_LINE_CHANNEL_SECRET
-$ export LINE_CHANNEL_ACCESS_TOKEN=YOUR_LINE_CHANNEL_ACCESS_TOKEN
-
-$ pip install -r requirements.txt
-```
-
-Run WebhookParser sample
+## 使用
 
 ```
-$ python app.py
+git clone https://github.com/aszx87410/line-bot.git
 ```
 
-Run WebhookHandler sample
+把 `config.js` 裡面的三個 key 換成自己的
+
+再來先裝必要的套件
 
 ```
-$ python app_with_handler.py
+npm install
 ```
+
+
+裝好之後，如果要 debug 的話，就是
+
+```
+npm run dev
+```
+
+如果想直接跑的，那就
+
+```
+npm run build
+npm start
+```
+
+## 教學
+[[教學] Line API](http://huli.logdown.com/posts/726082-line-bot-api-tutorial)
+
