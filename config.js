@@ -1,5 +1,0 @@
-module.exports = {
-	CHANNEL_ID: '1512156676',
-	CHANNEL_SERECT: '7b3c329f7d657490e9e059f5b319d978',
-	MID: 'qXH57zpR/MSsj5vzAdmYoIC9onhS1RkbQly4eQ63Rm/gmi6EAyHJOg/E4pBYE2s8iYNIta7OCb6Qm62mcA7XxPizm7nQrQ70rwQpC/+meaZLiw2rUBKseaVOktkEKNXaB3gSlhOMLkxbb/0vxeXClgdB04t89/1O/w1cDnyilFU='
-}
