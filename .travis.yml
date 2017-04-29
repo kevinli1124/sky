@@ -1,5 +1,12 @@
-language: java
-sudo: false
-jdk:
-  - oraclejdk8
-install: ./gradlew check
+language: python
+
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
+install: pip install tox-travis
+
+script: tox
