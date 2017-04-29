@@ -1,5 +1,6 @@
-require 'sinatra'   # gem 'sinatra'
-require 'line/bot'  # gem 'line-bot-api'
+require 'sinatra'
+require 'sinatra/logger'
+require 'line/bot'
 
 def client
   @client ||= Line::Bot::Client.new { |config|
@@ -17,20 +18,24 @@ post '/callback' do
   end
 
   events = client.parse_events_from(body)
-
-  events.each { |event|
+  events.each do |event|
     case event
     when Line::Bot::Event::Message
       case event.type
       when Line::Bot::Event::MessageType::Text
+        say_message = event.message['text']
         message = {
           type: 'text',
-          text: event.message['text']
+          text: "reply: #{say_message}"
         }
-        client.reply_message(event['replyToken'], message)
+        response = client.reply_message(event['replyToken'], message)
+      when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
+        response = client.get_message_content(event.message['id'])
+        tf = Tempfile.open("content")
+        tf.write(response.body)
       end
     end
-  }
+  end
 
   "OK"
 end
