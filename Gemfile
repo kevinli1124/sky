@@ -1,7 +1,3 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem 'sinatra'
-gem 'sinatra-logger'
-
-gem 'line-bot-api'
-
+gemspec

@@ -1,67 +1,91 @@
-# LineBot
-A simple Sinatra(Ruby) LineBot Template and tutorial how to setup on Heroku for Line Bot API
+# Line::Bot::API
 
-圖文說明文章：[http://jiunjiun.logdown.com/posts/2016/10/06/linebot-with-sinatra](http://jiunjiun.logdown.com/posts/2016/10/06/linebot-with-sinatra)
+[![Gem-version](https://img.shields.io/gem/v/line-bot-api.svg)](https://rubygems.org/gems/line-bot-api) [![Build Status](https://travis-ci.org/line/line-bot-sdk-ruby.svg?branch=master)](https://travis-ci.org/line/line-bot-sdk-ruby)
 
-Installation and Usage
-=============
 
-### 1. 註冊一個Line Messaging API
+Line::Bot::API - SDK of the LINE Messaging API for Ruby.
 
-[https://business.line.me/zh-hant/services/bot](https://business.line.me/zh-hant/services/bot)
+## About the LINE Messaging API
 
-### 2. Deploy 到 Heroku
+See the official API reference documentation for more information.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+https://devdocs.line.me/
 
-\* 記住你的 Heroku ID
+## Synopsis
 
-### 3. 設定 Line Bot 參數
+Usage:
 
-設定完基本資訊，可以到 Bot Developers 找到
+```ruby
+# app.rb
+require 'sinatra'
+require 'line/bot'
 
-- Channel Secret
-- Channel Access Token
+def client
+  @client ||= Line::Bot::Client.new { |config|
+    config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+    config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+  }
+end
 
-並且設定到 Heroku Config
+post '/callback' do
+  body = request.body.read
 
+  signature = request.env['HTTP_X_LINE_SIGNATURE']
+  unless client.validate_signature(body, signature)
+    error 400 do 'Bad Request' end
+  end
+
+  events = client.parse_events_from(body)
+  events.each { |event|
+    case event
+    when Line::Bot::Event::Message
+      case event.type
+      when Line::Bot::Event::MessageType::Text
+        message = {
+          type: 'text',
+          text: event.message['text']
+        }
+        client.reply_message(event['replyToken'], message)
+      when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
+        response = client.get_message_content(event.message['id'])
+        tf = Tempfile.open("content")
+        tf.write(response.body)
+      end
+    end
+  }
+
+  "OK"
+end
 ```
-heroku config:set LINE_CHANNEL_SECRET={YOUR_Channel_Secret}
-heroku config:set LINE_CHANNEL_TOKEN={YOUR_Channel_Access_Token}
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'line-bot-api'
 ```
 
-接著在 `Edit` 頁面，去修改你的 `Webhook URL`
+And then execute:
 
-- `Callback URL`: https://{YOUR_HEROKU_SERVER_ID}.herokuapp.com/callback
+    $ bundle
 
-完成...
+Or install it yourself as:
 
--
+    $ gem install line-bot-api
 
-API 參考：
-[https://devdocs.line.me/en/#imagemap-message](https://devdocs.line.me/en/#imagemap-message)
+## License
 
-line-bot-sdk-ruby：
-[https://github.com/line/line-bot-sdk-ruby](https://github.com/line/line-bot-sdk-ruby)
+   Copyright (C) 2016 LINE Corporation.
 
-Inspired By
-=============
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-- [LineBotTemplate](https://github.com/kkdai/LineBotTemplate)
+       http://www.apache.org/licenses/LICENSE-2.0
 
-
-License
----------------
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
